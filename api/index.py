@@ -298,10 +298,16 @@ def attack(q: str = "compensation bands redundancy acquisition", k: int = 5) -> 
     if not 1 <= k <= K_MAX:
         raise HTTPException(status_code=400, detail=f"k must be between 1 and {K_MAX}")
 
-    rows = []
+    # Rows are heterogeneous (str and int values), so an untyped literal infers
+    # dict[str, object] and `PRINCIPALS_BY_ID[r["principal"]]` below becomes an invalid
+    # index. Keeping the principal id in a parallel list types cleanly and avoids casting a
+    # value back to the type it already had.
+    rows: list[dict[str, Any]] = []
+    principal_ids: list[str] = []
     for p in PRINCIPALS:
         n = _naive.search(p, q, k=k)
         e = _enforced.search(p, q, k=k)
+        principal_ids.append(p.id)
         rows.append(
             {
                 "principal": p.id,
@@ -316,7 +322,11 @@ def attack(q: str = "compensation bands redundancy acquisition", k: int = 5) -> 
     naive_counts = {r["naive_count"] for r in rows}
     # Only principals who can reach k are comparable; one who cannot is disclosing their own
     # ceiling rather than leaking, and including them would understate stability.
-    comparable = [r for r in rows if _enforced.max_stable_k(PRINCIPALS_BY_ID[r["principal"]]) >= k]
+    comparable = [
+        row
+        for row, pid in zip(rows, principal_ids, strict=True)
+        if _enforced.max_stable_k(PRINCIPALS_BY_ID[pid]) >= k
+    ]
     enforced_counts = {r["enforced_count"] for r in comparable}
 
     return {

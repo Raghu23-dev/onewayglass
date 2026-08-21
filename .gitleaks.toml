@@ -1,0 +1,53 @@
+# gitleaks configuration.
+#
+# WHY THIS FILE EXISTS
+#
+# The first CI run this repo ever completed failed its secrets job on three findings, all
+# `curl-auth-header` in `api/index.py`. All three are false positives, and the reason is
+# specific to what this project demonstrates rather than a general "the scanner is noisy".
+#
+# onewayglass proves that an observable result COUNT stays identical across *authenticated
+# identities*. A single anonymous endpoint could not demonstrate that property at all, so the
+# live instance needs per-principal bearer tokens — and it needs a visitor to be able to run
+# the attack as two different people. So the landing page prints the tokens, and the module
+# docstring states plainly that the corpus is synthetic fiction and there is nothing to
+# protect. The tokens are `demo-<principal_id>`, derived at import time from the principal
+# list; they authorise nothing outside this demo and no real credential is read anywhere.
+#
+# The allowlist is deliberately narrow. Disabling `curl-auth-header` outright would blind the
+# scanner to a genuine `Authorization:` header pasted into a doc or a test — a real risk in a
+# repo whose examples are all curl commands. So this matches only the literal
+# `Bearer demo-…` form, which cannot express a real token.
+#
+# If a future example needs a credential-shaped value, it must NOT be added here. Put it in an
+# environment variable and reference it, the way `.env.example` already does.
+
+[extend]
+useDefault = true
+
+# A global allowlist rather than a per-rule one: redefining `[[rules]]` with an existing id
+# REPLACES that rule instead of merging an allowlist into it, so the version of this file that
+# did that silently changed nothing and still reported 3 leaks. Verified with gitleaks 8.30.1
+# locally before pushing, because a secrets-scanning config that does not do what it claims is
+# the same class of defect as the empty test directory this repo just fixed.
+[allowlist]
+description = "Published demo tokens on the landing page — see the module docstring in api/index.py"
+# `regexes` ONLY, deliberately without `paths`.
+#
+# The first attempt combined the two, which reads like "this pattern, in this file" but means
+# "this pattern OR this file" — gitleaks treats the conditions as alternatives, not a
+# conjunction. A control proved it: a fabricated `Bearer sk_live_…` appended to api/index.py
+# was NOT reported, because allowlisting the path exempted the whole file. That would have
+# turned a secrets gate into a blind spot over the one file most likely to grow a credential.
+#
+# Matching on the secret's shape alone is the tighter constraint: a `demo-<principal_id>` token
+# cannot express a real credential, wherever it appears. A genuine Authorization header in this
+# file or any other is still reported. Verified with both controls before pushing.
+#
+# `regexTarget = "match"` is load-bearing. By default these regexes are tested against the
+# rule's CAPTURED SECRET, which here is `demo-u_ic_eng` — the `Bearer ` prefix is part of the
+# rule's pattern, not the capture — so a regex written as `Bearer demo-…` matched nothing and
+# left all three findings reported. Anchored to the full match so the `Bearer ` context still
+# has to be present, keeping the allowlist narrower than a bare token pattern would be.
+regexTarget = "match"
+regexes = ['''Authorization:\s*Bearer demo-[a-z_]+''']

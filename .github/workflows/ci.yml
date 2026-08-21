@@ -2,6 +2,12 @@ name: ci
 on:
   push: { branches: [main, develop] }
   pull_request:
+  # Manual trigger. This repo recorded ZERO workflow runs across three release tags
+  # while the workflow reported `state: active` — pushes and PRs registered
+  # check-suites for the deploy integrations but never for Actions, and without
+  # workflow_dispatch there was no way to force a run or to tell "never triggered"
+  # apart from "triggered and passed silently".
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
