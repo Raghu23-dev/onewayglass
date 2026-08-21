@@ -52,6 +52,30 @@ ignore = [
 [tool.mypy]
 strict = true
 warn_unreachable = true
+# Four benchmark dirs each contain a `measure.py`, so as top-level modules they collide:
+# "Duplicate module named measure". That aborted the whole run with exit 2 — mypy checked
+# NOTHING, and CI's `mypy .` step had never type-checked this repo. Deriving module names
+# from the full path disambiguates them without renaming files whose names are correct
+# (bench/latency/measure.py reads better than bench/latency/measure_latency.py).
+explicit_package_bases = true
+namespace_packages = true
+mypy_path = "src"
+
+# Benchmarks and tests reach each other through `sys.path` inserts, which mypy cannot
+# follow, and their local helpers are deliberately untyped one-off report formatters. The
+# library and the deployed app stay fully strict — those are the code that ships. Scoped
+# per-module rather than by loosening `strict`, so a real type error in src/ or api/ still
+# fails CI.
+[[tool.mypy.overrides]]
+module = ["bench.*", "tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+ignore_missing_imports = true
+warn_unused_ignores = false
+# `import-not-found` rather than ignore_missing_imports alone: these modules import siblings
+# (`leak`, `index`) that only resolve after a runtime sys.path insert, so mypy sees the file
+# but not the module name. The imports are correct — they run in CI and in the benchmarks.
+disable_error_code = ["import-not-found", "import-untyped"]
 
 [tool.pytest.ini_options]
 # NOTE: in a file named pytest.ini this section must be [pytest]; inside
