@@ -1,0 +1,24 @@
+{
+  "runs_per_arm": 2000,
+  "repeats": 7,
+  "unit": "microseconds",
+  "few_restricted_padded": 1,
+  "many_restricted_padded": 5,
+  "snr_per_repeat": [
+    0.423,
+    0.854,
+    0.838,
+    0.726,
+    0.545,
+    1.12,
+    0.416
+  ],
+  "snr_median": 0.726,
+  "snr_range": [
+    0.416,
+    1.12
+  ],
+  "median_difference": 1.79,
+  "verdict": "TIMING CHANNEL PRESENT",
+  "scope": "in-process, single machine; network and DB-backed stores not modelled"
+}

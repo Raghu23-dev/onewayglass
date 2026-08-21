@@ -1,0 +1,171 @@
+{
+  "corpus_size": 35,
+  "k": 5,
+  "attacker": "u_ic_eng",
+  "attacker_readable": 13,
+  "probes": 15,
+  "probes_with_hidden_matches": 13,
+  "inference_exactly_correct": 15,
+  "distinct_documents_revealed": [
+    "doc_eng_07",
+    "doc_eng_08",
+    "doc_eng_09",
+    "doc_eng_10",
+    "doc_eng_11",
+    "doc_exec_01",
+    "doc_exec_02",
+    "doc_exec_03",
+    "doc_exec_04",
+    "doc_people_02",
+    "doc_people_03",
+    "doc_people_04",
+    "doc_people_05",
+    "doc_sales_02",
+    "doc_sales_04",
+    "doc_sales_05",
+    "doc_sales_06"
+  ],
+  "results": [
+    {
+      "query": "compensation bands for senior engineers",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_people_03",
+        "doc_eng_10"
+      ]
+    },
+    {
+      "query": "redundancy planning next fiscal year",
+      "returned": 0,
+      "inferred_hidden": 3,
+      "actual_hidden": 3,
+      "revealed_ids": [
+        "doc_people_05",
+        "doc_exec_01",
+        "doc_people_04"
+      ]
+    },
+    {
+      "query": "grievance case notes raised this year",
+      "returned": 0,
+      "inferred_hidden": 3,
+      "actual_hidden": 3,
+      "revealed_ids": [
+        "doc_people_04",
+        "doc_sales_02",
+        "doc_people_05"
+      ]
+    },
+    {
+      "query": "acquisition discussions with potential acquirers",
+      "returned": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "revealed_ids": [
+        "doc_exec_02"
+      ]
+    },
+    {
+      "query": "runway analysis burn months",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_exec_03",
+        "doc_sales_05"
+      ]
+    },
+    {
+      "query": "board minutes funding round",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_exec_01",
+        "doc_eng_11"
+      ]
+    },
+    {
+      "query": "executive succession candidates",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_exec_04",
+        "doc_eng_07"
+      ]
+    },
+    {
+      "query": "security audit findings severity",
+      "returned": 2,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "revealed_ids": [
+        "doc_eng_08"
+      ]
+    },
+    {
+      "query": "infrastructure cost breakdown compute",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_eng_09",
+        "doc_sales_02"
+      ]
+    },
+    {
+      "query": "commission structure accelerators quota",
+      "returned": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "revealed_ids": [
+        "doc_sales_06"
+      ]
+    },
+    {
+      "query": "lost deal analysis compliance certification",
+      "returned": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "revealed_ids": [
+        "doc_sales_05",
+        "doc_exec_03"
+      ]
+    },
+    {
+      "query": "performance calibration ratings moderated",
+      "returned": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "revealed_ids": [
+        "doc_people_02"
+      ]
+    },
+    {
+      "query": "holiday allowance annual leave",
+      "returned": 1,
+      "inferred_hidden": 0,
+      "actual_hidden": 0,
+      "revealed_ids": []
+    },
+    {
+      "query": "deployment runbook roll back",
+      "returned": 1,
+      "inferred_hidden": 0,
+      "actual_hidden": 0,
+      "revealed_ids": []
+    },
+    {
+      "query": "expense policy receipts approval",
+      "returned": 2,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "revealed_ids": [
+        "doc_sales_04"
+      ]
+    }
+  ]
+}

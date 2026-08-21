@@ -1,0 +1,64 @@
+{
+  "k": 5,
+  "naive_mean_recall": 0.9225,
+  "enforced_mean_recall": 1.0,
+  "delta": 0.0775,
+  "threshold": -0.05,
+  "queries": 20,
+  "per_principal": [
+    {
+      "principal": "u_ic_eng",
+      "readable": 13,
+      "naive_recall": 0.9231,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_lead_eng",
+      "readable": 17,
+      "naive_recall": 0.9697,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_dir_eng",
+      "readable": 20,
+      "naive_recall": 0.9737,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_ic_sales",
+      "readable": 11,
+      "naive_recall": 0.9091,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_dir_sales",
+      "readable": 15,
+      "naive_recall": 0.92,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_ic_people",
+      "readable": 10,
+      "naive_recall": 0.9,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_dir_people",
+      "readable": 14,
+      "naive_recall": 0.8571,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_exec",
+      "readable": 35,
+      "naive_recall": 1.0,
+      "enforced_recall": 1.0
+    },
+    {
+      "principal": "u_contractor",
+      "readable": 10,
+      "naive_recall": 0.85,
+      "enforced_recall": 1.0
+    }
+  ]
+}
