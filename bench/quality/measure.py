@@ -21,9 +21,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "baseline"))
 
-from leak import K, PROBES
+from leak import K
 
 from onewayglass.corpus import DOCUMENTS, PRINCIPALS, visible_to
+from onewayglass.enforced import EnforcedRetriever
+from onewayglass.naive import Index, NaiveRetriever
 
 #: Queries an authorised user would actually ask, targeting documents they CAN read.
 #:
@@ -53,8 +55,6 @@ QUALITY_PROBES: tuple[str, ...] = (
     "territory assignments northern europe",
     "discount approval matrix director sign-off",
 )
-from onewayglass.enforced import EnforcedRetriever
-from onewayglass.naive import Index, NaiveRetriever
 
 
 def ideal_for(index: Index, principal, query: str, k: int) -> list[str]:
@@ -118,7 +118,7 @@ def main() -> None:
     delta = enforced_avg - naive_avg
 
     print()
-    print(f"  mean recall against per-principal ideal:")
+    print("  mean recall against per-principal ideal:")
     print(f"    naive (retrieve then filter):  {naive_avg:.3f}")
     print(f"    enforced (filter then rank):   {enforced_avg:.3f}")
     print(f"    delta:                         {delta:+.3f}")

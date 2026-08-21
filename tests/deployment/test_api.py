@@ -15,7 +15,7 @@ from fastapi.testclient import TestClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "api"))
 
-from index import TOKENS, _index, app  # noqa: E402
+from index import TOKENS, _index, app
 
 from onewayglass.corpus import DOCUMENTS_BY_ID, PRINCIPALS, PRINCIPALS_BY_ID, visible_to
 
@@ -171,7 +171,7 @@ class TestHealth:
 
         original = api._enforced.search
 
-        def leaky(principal, query, k=5):  # noqa: ANN001, ANN202
+        def leaky(principal, query, k=5):
             answer = original(principal, query, k=k)
             if principal.id == "u_ic_eng":
                 return type(answer)(answer.results[:-1])

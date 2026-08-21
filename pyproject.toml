@@ -6,10 +6,21 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Raghuram P" }]
-dependencies = []
+# fastapi is a RUNTIME dependency, not a dev one: the deployed instance in `api/` imports it.
+# It was initially listed only in requirements.txt, which Vercel's Python builder ignores in
+# favour of pyproject.toml — so the deploy resolved 21 packages without the web framework it
+# needed. Declared here, where the platform actually looks.
+dependencies = ["fastapi>=0.121,<0.122"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.8", "mypy>=1.13", "httpx>=0.27"]
+
+[tool.hatch.build.targets.wheel]
+# Required explicitly because the package lives in src/ and does not match the project name at
+# the repo root. Without it hatchling cannot infer what to ship and the build fails with
+# "Unable to determine which files to ship inside the wheel" — which surfaced only on the
+# deploy, since nothing local had ever built a wheel.
+packages = ["src/onewayglass"]
 
 [build-system]
 requires = ["hatchling"]
@@ -23,6 +34,12 @@ target-version = "py312"
 # Benchmarks exist to print legible tables for humans. Print statements and long format
 # strings are the deliverable, not a lapse.
 "bench/**" = ["T201", "E501", "N806"]
+# The deployed landing page is one HTML/CSS literal. Wrapping CSS rules to satisfy a line
+# limit makes them harder to read, not easier.
+"api/index.py" = ["E501"]
+# The corpus is 35 document bodies written as single prose strings. Wrapping them to a column
+# limit makes the corpus harder to read and review, which is the opposite of the point.
+"src/onewayglass/corpus.py" = ["E501"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
