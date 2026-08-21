@@ -4,6 +4,8 @@ Generated from Conventional Commits. Notable changes per release.
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-08-21
+
 ### Fixed
 - **`mypy .` exited 2 without checking anything**: four `bench/*/measure.py` files collide as
   top-level modules ("Duplicate module named measure"), which aborts the run. Resolved with
