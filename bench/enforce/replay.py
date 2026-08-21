@@ -16,7 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "baseline"))
 
-from leak import K, PROBES
+from leak import PROBES, K
 
 from onewayglass.corpus import DOCUMENTS, PRINCIPALS, PRINCIPALS_BY_ID, visible_to
 from onewayglass.enforced import EnforcedRetriever
@@ -85,7 +85,7 @@ def main() -> None:
         distinct = sorted(set(counts.values()))
         if len(distinct) > 1:
             unstable.append((query, counts))
-        print(f"  {query[:42]:<44}{str(distinct):>28}")
+        print(f"  {query[:42]:<44}{distinct!s:>28}")
 
     print()
     if unstable:

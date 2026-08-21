@@ -206,3 +206,52 @@ class TestAccessModelIsSane:
         visible = {d.id for d in visible_to(contractor)}
         company_wide = {d.id for d in DOCUMENTS if d.company_wide}
         assert visible == company_wide | {"doc_eng_04"}
+
+
+class TestRelevanceChannelIsAcknowledged:
+    """The relevance channel is real, measured, and must not silently regress.
+
+    These tests do not assert the channel is closed — it is not. They assert the project keeps
+    telling the truth about it, because the failure mode here is a future change that makes
+    padding look relevance-plausible in one case and lets someone claim the channel is shut.
+    """
+
+    def test_padding_is_currently_recognisable_by_term_overlap(self) -> None:
+        """Documents the channel's existence as a test rather than only as prose.
+
+        If a future change makes padding share query terms, this fails — which is the signal to
+        re-run bench/relevance/ and revise the claim, in either direction.
+        """
+        from onewayglass.naive import tokenise
+
+        retriever = EnforcedRetriever(Index())
+        attacker = PRINCIPALS_BY_ID["u_ic_eng"]
+        query = "redundancy planning next fiscal year"
+
+        answer = retriever.search(attacker, query, k=5)
+        padded = [r for r in answer.results if r.padded]
+        assert padded, "this query must produce padding for the test to mean anything"
+
+        q = set(tokenise(query))
+        recognisable = [
+            r for r in padded if not (q & set(tokenise(f"{r.document.title} {r.document.text}")))
+        ]
+        assert len(recognisable) == len(padded), (
+            "padding no longer detectable by term overlap — re-run bench/relevance/ and update "
+            "the claim in README and docs/05-results.md"
+        )
+
+    def test_count_stability_still_holds_despite_the_relevance_channel(self) -> None:
+        """The narrower claim, asserted precisely.
+
+        The count channel is closed even though the relevance channel is open. Both facts are
+        true and the project states both.
+        """
+        retriever = EnforcedRetriever(Index())
+        query = "redundancy planning next fiscal year"
+        counts = {
+            p.id: retriever.search(p, query, k=5).result_count
+            for p in PRINCIPALS
+            if retriever.max_stable_k(p) >= 5
+        }
+        assert len(set(counts.values())) == 1, counts
