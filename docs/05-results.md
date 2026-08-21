@@ -53,7 +53,7 @@ where run-to-run swing exceeds the effect, which is why it is reported as unreso
 | 2 | Count inference defeated | attacker accuracy ≤ 1/15 | 15/15 → **0/15** | **yes** |
 | 3 | Count-stability | identical count, every principal, every query | 5 for all 9 principals on all 15 probes; 0 unstable queries | **yes** |
 | 4 | Existence probing defeated | 17 revealed → 0 | **0** | **yes** |
-| 5 | Retrieval quality preserved | recall@5 within 5% of per-principal ideal | **1.000** — enforcement *gains* 7.7% over naive | **yes** |
+| 5 | Retrieval quality preserved | recall@5 within 5% of per-principal ideal | **1.000** — enforcement *gains* 7.75 points over naive | **yes** |
 | 6 | Latency cost bounded | p99 within 2× naive | p50 1.48×, p95 1.50×, batched p99 1.37×, all 7/7 repeats. Per-request p99 unresolved. | **on the statistics this harness resolves** |
 
 **Kill condition 3 triggered.** "If a timing side channel survives that reveals what padding
@@ -121,6 +121,6 @@ that only confirms the expected direction cannot catch a harness that is measuri
 
 **Enforcement improving recall was not the predicted outcome.** The thesis budgeted for up to
 5% recall loss and treated the tradeoff curve as a publishable result. Instead recall went *up*
-7.7%, because retrieve-then-filter lets restricted documents consume top-k slots a readable
+7.75 points, because retrieve-then-filter lets restricted documents consume top-k slots a readable
 document could have used. The prediction was wrong in a favourable direction, which is still a
 wrong prediction and is recorded as one.

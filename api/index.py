@@ -46,7 +46,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("onewayglass")
 
-VERSION = "0.1.0"
+VERSION = "0.2.1"
 K_MAX = 10
 
 # Built once at cold start. The index is immutable and shared; the readable set is still

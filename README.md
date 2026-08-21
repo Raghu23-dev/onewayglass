@@ -59,7 +59,7 @@ python bench/enforce/replay.py     # the same attacks, enforced
 | Content violations | 0 | **0** (135 principal-query pairs) |
 | Recall vs per-principal ideal | 0.923 | **1.000** |
 
-Enforcement **improves** recall by 7.7%, and the gain tracks permission: the CEO loses nothing
+Enforcement **improves** recall by 7.75 points, and the gain tracks permission: the CEO loses nothing
 either way, the contractor gains most. Retrieve-then-filter costs quality precisely because
 restricted documents occupy top-k slots a readable document could have used.
 
