@@ -106,3 +106,17 @@ information, not the payload" — was wrong against a recipient, and is now reco
 than quietly restated.
 **What would change it.** Relevance-plausible padding landing first. Once filler is not obvious
 from the text, the flag becomes the only disclosure and should go behind a capability.
+
+## 2026-08-21 — Publish relevance-plausible padding as a failed fix
+
+**Decision.** `plausible_pad` ships as a non-default option, documented as ineffective, with the
+measurement and four tests pinning the negative result.
+**Alternatives.** Delete the code and mention the idea in future work. Or keep trying variants
+until something moved the number.
+**Why.** Zero improvement — 69/75 detectable either way — and the reason is structural rather than
+a tuning failure: for 11 of 15 attack queries no readable document shares a single term with the
+query, so the ordering heuristic has nothing to order. Deleting it would leave the next person to
+run the same experiment. The flag plus the writeup is cheaper than repeating it.
+**What would change it.** Nothing about the heuristic. The finding underneath — that plausible
+material is available in inverse proportion to how much is hidden — bounds any filler-selection
+approach, not just this one.
