@@ -1,0 +1,149 @@
+{
+  "k": 5,
+  "attacker": "u_ic_eng",
+  "attacker_model": "term overlap only \u2014 no BM25, no second request",
+  "probes": 15,
+  "probes_with_hidden_matches": 13,
+  "inference_exactly_correct": 15,
+  "count_channel_closed": true,
+  "relevance_channel_open": true,
+  "padded_flag_discloses_directly": true,
+  "verdict": "RELEVANCE CHANNEL PRESENT \u2014 count-stability is necessary and not sufficient",
+  "rows": [
+    {
+      "query": "compensation bands for senior engineers",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "redundancy planning next fiscal year",
+      "count_returned": 5,
+      "available": 3,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 3,
+      "actual_hidden": 3,
+      "exact": true
+    },
+    {
+      "query": "grievance case notes raised this year",
+      "count_returned": 5,
+      "available": 3,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 3,
+      "actual_hidden": 3,
+      "exact": true
+    },
+    {
+      "query": "acquisition discussions with potential acquirers",
+      "count_returned": 5,
+      "available": 1,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "exact": true
+    },
+    {
+      "query": "runway analysis burn months",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "board minutes funding round",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "executive succession candidates",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "security audit findings severity",
+      "count_returned": 5,
+      "available": 3,
+      "relevant_by_reading": 2,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "exact": true
+    },
+    {
+      "query": "infrastructure cost breakdown compute",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "commission structure accelerators quota",
+      "count_returned": 5,
+      "available": 1,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "exact": true
+    },
+    {
+      "query": "lost deal analysis compliance certification",
+      "count_returned": 5,
+      "available": 2,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 2,
+      "actual_hidden": 2,
+      "exact": true
+    },
+    {
+      "query": "performance calibration ratings moderated",
+      "count_returned": 5,
+      "available": 1,
+      "relevant_by_reading": 0,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "exact": true
+    },
+    {
+      "query": "holiday allowance annual leave",
+      "count_returned": 5,
+      "available": 1,
+      "relevant_by_reading": 1,
+      "inferred_hidden": 0,
+      "actual_hidden": 0,
+      "exact": true
+    },
+    {
+      "query": "deployment runbook roll back",
+      "count_returned": 5,
+      "available": 1,
+      "relevant_by_reading": 1,
+      "inferred_hidden": 0,
+      "actual_hidden": 0,
+      "exact": true
+    },
+    {
+      "query": "expense policy receipts approval",
+      "count_returned": 5,
+      "available": 3,
+      "relevant_by_reading": 2,
+      "inferred_hidden": 1,
+      "actual_hidden": 1,
+      "exact": true
+    }
+  ]
+}

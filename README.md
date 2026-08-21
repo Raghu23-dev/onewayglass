@@ -1,6 +1,6 @@
 # onewayglass
 
-**Retrieval that cannot tell you what it hid.**
+**Retrieval whose result count cannot tell you what it hid.**
 
 RAG over permissioned documents leaks even when it never returns a document you may not read.
 Filter after retrieval and the *result count* tells the caller how many restricted documents
@@ -81,10 +81,43 @@ The invariant every test attacks:
 That is the one-way glass: from outside, a blocked document and a nonexistent one look the
 same.
 
-## A timing channel survives. This is stated, not buried.
+## Count-stability is necessary and not sufficient. Two channels survive.
 
-`docs/02-thesis.md` pre-committed to publishing a residual channel rather than claiming the
-guarantee. One was found.
+`docs/02-thesis.md` pre-committed to publishing residual channels rather than claiming the
+guarantee. Two were found, and the second is worse than the first.
+
+### The relevance channel — the serious one
+
+**Inference is 15/15 exact, recovered by reading the results.** One request, no statistics, no
+cross-principal comparison, no timing.
+
+Padded results are filler: they share no terms with the query. So a principal who receives five
+results and sees that none of them answer the question knows every document that *did* match is
+one they cannot read. That is the original inference, restored in full.
+
+```
+result_count: 5      ← stable, identical to the CEO's
+results:      5 documents, none containing "redundancy", "planning" or "fiscal"
+                    ← the count says nothing; the contents say everything
+```
+
+It was found **after** all six criteria passed, by looking at what the deployed instance actually
+returns. The earlier benchmarks all measured an observer of the *count* — a colleague comparing
+notes, a proxy log — and against that observer count-stability works. But in the original threat
+model the attacker **is** the principal, and the principal can read.
+
+So the honest claim is narrower than "count inference defeated":
+
+> **Count-stability defeats an observer of the count. It does not defeat the recipient of the
+> results.**
+
+That is still worth something — a colleague comparing counts, an access log that records counts
+but not payloads, an analytics pipeline aggregating per-principal result counts. It is not
+protection against the reader.
+
+Full measurement: [`bench/relevance/results/2026-08-21.md`](bench/relevance/results/2026-08-21.md)
+
+### The timing channel — the weak one
 
 7 repeats × 2,000 runs, arm order alternated: **median SNR 0.73** (range 0.42–1.12), median
 difference **1.8 µs**. Above the 0.5 threshold, so the channel is present.
@@ -113,7 +146,8 @@ uv pip install -e ".[dev]"
 python bench/baseline/leak.py      # the leak
 python bench/enforce/replay.py     # the fix
 python bench/quality/measure.py    # what it costs
-python bench/timing/measure.py     # what it does not fix
+python bench/relevance/measure.py  # what it does NOT fix, and this one matters
+python bench/timing/measure.py     # a weaker residual channel
 python bench/latency/measure.py    # what it costs
 pytest -q                          # 16 adversarial tests
 ```
@@ -123,7 +157,7 @@ pytest -q                          # 16 adversarial tests
 | # | Criterion | Status |
 |---|---|---|
 | 1 | No content leak | **met** — 0 across 135 pairs |
-| 2 | Count inference defeated | **met** — 15/15 → 0/15 |
+| 2 | Count inference defeated | **met for the count channel** — 15/15 → 0/15. Restored to 15/15 via relevance, see above. |
 | 3 | Count-stability | **met** — identical count, all principals, all queries |
 | 4 | Existence probing defeated | **met** — 17 → 0 |
 | 5 | Retrieval quality preserved | **met** — 0.923 → 1.000 |
@@ -154,7 +188,14 @@ meant anything.
 
 ## Limitations
 
-- **A timing channel remains** (median SNR 0.73, 1.8 µs). Count-stability is partial. See above.
+- **The relevance channel is open** — inference 15/15 by reading the results. This is the
+  significant limitation and it is not fixed. Count-stability protects against an observer of the
+  count, not against the recipient.
+- **A timing channel remains** (median SNR 0.73, 1.8 µs), far weaker than the relevance channel
+  since it needs thousands of samples.
+- **The `padded` flag discloses the count outright.** It exists so an authorised caller can
+  weight or hide filler. When the caller is the attacker it hands over the number the count no
+  longer gives, with no inference at all.
 - **Padding dilutes results.** A padded result is a real readable document that did not rank.
   The caller gets k results where fewer were genuinely relevant. `padded` is exposed per result
   so a consumer can weight or hide them — available to the authorised caller, invisible in the

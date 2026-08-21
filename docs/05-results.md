@@ -14,6 +14,7 @@ deterministic (fixed corpus, fixed probes, BM25) and produce identical output on
 python bench/baseline/leak.py      # the leak
 python bench/enforce/replay.py     # criteria 1-4
 python bench/quality/measure.py    # criterion 5
+python bench/relevance/measure.py  # the relevance channel — found after the criteria passed
 python bench/timing/measure.py     # kill condition 3
 python bench/latency/measure.py    # criterion 6
 pytest -q                          # 16 adversarial tests
@@ -34,6 +35,7 @@ pytest -q                          # 16 adversarial tests
 | Latency batched p99 | 11.78 µs | 16.25 µs | **1.37×** | 7 | 1.33–1.47 |
 | Latency per-request p99 | 11.29 µs | 17.16 µs | **unresolved** | 7 | verdict flipped between whole runs |
 | Timing channel SNR (padded vs unpadded) | — | **0.73** | — | 7 | 0.42–1.12 |
+| **Relevance-channel inference (attacker reads results)** | 15/15 | **15/15** | **0** | deterministic | none |
 
 **Noise floor.** An A/A control times two instances of *identical* code through the same
 protocol. It deviates from unity by up to **1.15× at p99** — so any p99 difference below that
@@ -57,7 +59,36 @@ where run-to-run swing exceeds the effect, which is why it is reported as unreso
 **Kill condition 3 triggered.** "If a timing side channel survives that reveals what padding
 hid, say so." One does: median SNR 0.73, 1.8 µs. Published rather than suppressed.
 
+## The most important result is a limitation found after the criteria passed
+
+**The relevance channel restores the full original inference: 15/15 exact, by reading.**
+
+Every benchmark above measured an observer of the *count*. Against that observer, count-stability
+works. But the threat model said the attacker **is the principal** — and the principal receives
+the results and can read them. Padded results share no terms with the query, so a caller who sees
+five results and no answers knows every matching document is one they cannot read.
+
+One request. No statistics. No timing precision. No second principal.
+
+It was found by sweeping the deployed instance, not by any test in `tests/` or benchmark in
+`bench/` — all of which were built around the count. The threat model was framed too narrowly,
+and that is a flaw in the framing rather than in the fix.
+
+The narrower true claim:
+
+> Count-stability defeats an observer of the count. It does not defeat the recipient of the
+> results.
+
+Criteria 1–6 remain met as written, because they measured the count channel and the count channel
+is closed. Criterion 2's label, "count inference defeated", describes less than it sounds like it
+does. Full report in `bench/relevance/results/2026-08-21.md`.
+
 ## What came out worse than expected
+
+**The `padded` flag hands the attacker the number directly.** It was justified in
+`docs/03-architecture.md` on the grounds that "the *count* must carry no information, not the
+payload". That reasoning holds against an observer who sees the count and not the payload. Against
+the recipient it is wrong, and it was wrong when it was written.
 
 **A timing channel survives, and it points the wrong way.** The heavily-padded arm is
 *faster*, because padding appends pre-sorted documents rather than scoring more candidates. So

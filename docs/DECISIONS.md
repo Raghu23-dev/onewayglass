@@ -79,3 +79,30 @@ denominator because the difference turned out small is the same decision as choo
 it was large.
 **What would change it.** Nothing. The as-written arm is still reported, so the adjustment is
 visible rather than substituted.
+
+## 2026-08-21 — Publish the relevance channel and narrow the headline claim
+
+**Decision.** `bench/relevance/` added after all six criteria had passed. Inference is 15/15
+exact by reading the results. README, writeup and results now claim only that count-stability
+defeats an *observer of the count*, not the recipient.
+**Alternatives.** Ship the six passing criteria and list relevance under future work. Or attempt
+relevance-plausible padding first and publish a stronger result.
+**Why.** The thesis named "relevance score" as a detection vector before any code existed. The
+channel needs one request and no statistics, where the timing channel needs thousands of samples —
+it is the stronger attack by a wide margin, and burying it would have left the README claiming
+more than is true.
+**What would change it.** Relevance-plausible padding that measurably degrades a reader's ability
+to separate filler from answers. A test now fails if padding stops being detectable by term
+overlap, so the claim gets revised rather than drifting.
+
+## 2026-08-21 — Keep the `padded` flag despite it disclosing the count outright
+
+**Decision.** `Result.padded` stays.
+**Alternatives.** Remove it, so the response carries no explicit filler marker.
+**Why.** Removing it protects nothing: relevance is readable with or without the flag, so an
+attacker loses one line of JSON and keeps the whole inference. Meanwhile the authorised caller
+loses the ability to weight or hide filler. The original justification — "the count must carry no
+information, not the payload" — was wrong against a recipient, and is now recorded as wrong rather
+than quietly restated.
+**What would change it.** Relevance-plausible padding landing first. Once filler is not obvious
+from the text, the flag becomes the only disclosure and should go behind a capability.

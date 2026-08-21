@@ -1,6 +1,7 @@
 # onewayglass — Technical Writeup
 
-**Retrieval that cannot tell you what it hid.**
+**Retrieval whose result count cannot tell you what it hid — and a measurement of why that is
+less than it sounds.**
 
 ---
 
@@ -161,7 +162,40 @@ retrieve-then-filter lets restricted documents consume top-k slots a readable do
 used. The gain tracks permission: the CEO loses nothing either way, the contractor gains most
 (0.850 → 1.000). A prediction wrong in a favourable direction is still a wrong prediction.
 
-**A timing channel survives, and it points the wrong way.** Median SNR 0.73 over 7 repeats,
+**The most important result is a limitation found after every criterion had passed.** Sweeping
+the deployed instance showed something no test in `tests/` and no benchmark in `bench/` had asked
+about: padded results share no terms with the query, so the principal *reading* their five results
+sees that none of them answer the question — and therefore that every document which did match is
+one they cannot read.
+
+`bench/relevance/` measures it with an attacker model weaker than what is available to them: no
+BM25, no corpus statistics, no second request, just "does this document share one non-stopword
+term with my query". **Inference is 15/15 exact** — the full original leak, restored. Including
+correctly reporting zero on the two probes where nothing was hidden, which is what makes it an
+oracle rather than a guess.
+
+Every earlier benchmark had measured an observer of the *count*: a colleague comparing notes, a
+proxy log, an analytics pipeline. Against that observer count-stability works and the numbers
+above hold. But the threat model stated the attacker **is the principal**, and the principal
+receives the results. The framing was too narrow, and the narrower true claim is:
+
+> Count-stability defeats an observer of the count. It does not defeat the recipient of the
+> results.
+
+Worse, the `padded` flag hands the number over outright. It was justified in the architecture
+document on the grounds that "the *count* must carry no information, not the payload" — reasoning
+that holds against an observer who sees the count and not the payload, and is simply wrong against
+the recipient. It was wrong when it was written, and no test caught it because every test was
+built around the count.
+
+What count-stability is still worth: the colleague comparing counts, the access log that records
+counts but not payloads, the aggregation pipeline downstream of the payload. Those are real
+attackers and that channel is genuinely closed. Closing the relevance channel needs padding that
+is relevance-*plausible* — filler sharing query terms that reads as a near-answer — and even then
+a determined reader distinguishes a real answer from a topically similar non-answer. That is a
+substantially harder problem and is not solved here.
+
+**A timing channel also survives, and it points the wrong way.** Median SNR 0.73 over 7 repeats,
 median difference 1.8 µs. The heavily-padded arm is *faster*, because padding appends pre-sorted
 documents rather than scoring more candidates — so the channel leaks *"this query had few readable
 matches for you"*, close to what the count used to give away. Had I assumed padding would be
@@ -197,8 +231,18 @@ detect a harness measuring nothing.
 
 ## 6. Limitations
 
-**A timing channel remains.** Median SNR 0.73, 1.8 µs. Count-stability is a partial defence: the
-count channel is closed, a timing channel is not. At 1.8 µs it sits far below network jitter, so
+**The relevance channel is open.** Inference 15/15 by reading the results, one request, no
+statistics. This is the significant limitation. Count-stability protects an observer of the count,
+not the recipient of the results. `bench/relevance/results/2026-08-21.md` has the full
+measurement, and a test in `tests/adversarial/` fails if padding ever stops being recognisable by
+term overlap — so the claim gets revised rather than quietly drifting.
+
+**The `padded` flag discloses the count directly.** No inference needed. Removing it would protect
+nothing (relevance is still readable) while degrading results for the authorised caller, so it
+stays — but it is a disclosure and is named as one.
+
+**A timing channel remains.** Median SNR 0.73, 1.8 µs — far weaker than the relevance channel,
+since it needs thousands of samples where relevance needs one request. At 1.8 µs it sits far below network jitter, so
 exploiting it over HTTP needs a large number of observations — itself an anomalous query pattern —
 but it exists and it is measured. Closing it means padding the *execution path*: scoring a
 constant number of candidates regardless of how many are readable. That costs whole-corpus work
@@ -228,7 +272,17 @@ disclosure, per-tenant cache timing.
 **Out of scope and listed in `docs/NON-GOALS.md`:** query-log correlation across principals,
 embedding inversion, and any channel below the retrieval layer.
 
-**What I would do next**, in order: pad the execution path and re-measure the timing SNR, since
-that is the one open honesty gap in the result; then move to a permission-partitioned index and
-re-run the latency benchmark at 10⁵–10⁶ documents, since the scaling limit is the barrier to this
-being usable rather than demonstrable.
+**What I would do next**, in order:
+
+1. **Relevance-plausible padding**, and re-run `bench/relevance/`. This is the channel that
+   matters — it is exploitable by one person reading one response — and the current defence does
+   nothing about it. Approach: draw filler from documents that share query terms but do not answer
+   the question, then measure whether a reader can still separate them. I expect a partial result
+   at best, and the measurement is the point.
+2. **A permission-partitioned index**, and re-run `bench/latency/` at 10⁵–10⁶ documents. The full
+   scan per query is what stops this being usable rather than demonstrable.
+3. **Pad the execution path** and re-measure the timing SNR. Last, because it is the weakest of
+   the three channels and the most expensive to close.
+
+The ordering is deliberate: the biggest hole first, even though it is the one discovered last and
+the one that makes the headline result smaller.
