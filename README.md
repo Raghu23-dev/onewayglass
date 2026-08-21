@@ -10,6 +10,14 @@ matched. Absence is informative.
      of it. Act 2 — the same query, enforced, indistinguishable from a query with no hidden
      matches. Act 3 — the attack suite and the timing channel that survives. -->
 
+**Live:** https://onewayglass.vercel.app — run the attack yourself, as two different people:
+
+```bash
+curl "https://onewayglass.vercel.app/attack?q=compensation+bands+redundancy+acquisition"
+# naive counts differ by principal: [0, 2, 3]
+# enforced counts are identical:    [5]
+```
+
 ## The measured leak
 
 35-document synthetic org, 5 departments, 4 seniority levels. Attacker is an engineering IC
