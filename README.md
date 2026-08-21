@@ -10,6 +10,14 @@ matched. Absence is informative.
      of it. Act 2 — the same query, enforced, indistinguishable from a query with no hidden
      matches. Act 3 — the attack suite and the timing channel that survives. -->
 
+**Live:** https://onewayglass.vercel.app — run the attack yourself, as two different people:
+
+```bash
+curl "https://onewayglass.vercel.app/attack?q=compensation+bands+redundancy+acquisition"
+# naive counts differ by principal: [0, 2, 3]
+# enforced counts are identical:    [5]
+```
+
 ## The measured leak
 
 35-document synthetic org, 5 departments, 4 seniority levels. Attacker is an engineering IC
@@ -115,7 +123,25 @@ That is still worth something — a colleague comparing counts, an access log th
 but not payloads, an analytics pipeline aggregating per-principal result counts. It is not
 protection against the reader.
 
+**An attempt to fix it failed, and the failure is the more interesting result.** Ordering the
+filler by query-term overlap — so it at least looks on-topic — produced **zero improvement**, 69/75
+results still detectable as filler. For 11 of 15 attack queries *no readable document shares a
+single term with the query*, so the heuristic has nothing to order.
+
+That is structural, not a tuning problem: a caller asking about a subject they have no access to
+can read nothing on that subject. And the availability of cover runs exactly backwards —
+
+| Principal | May read | Queries with any plausible filler |
+|---|---|---|
+| Contractor | 10 | **3 / 15** |
+| Engineer (IC) | 13 | 4 / 15 |
+| **CEO** | **35** | **15 / 15** |
+
+The CEO, who has nothing hidden and needs no cover, is the only principal who can always be given
+it. **The defence is available in inverse proportion to the need for it.**
+
 Full measurement: [`bench/relevance/results/2026-08-21.md`](bench/relevance/results/2026-08-21.md)
+and [`bench/relevance/results/2026-08-21-plausible-padding.md`](bench/relevance/results/2026-08-21-plausible-padding.md)
 
 ### The timing channel — the weak one
 
@@ -147,6 +173,7 @@ python bench/baseline/leak.py      # the leak
 python bench/enforce/replay.py     # the fix
 python bench/quality/measure.py    # what it costs
 python bench/relevance/measure.py  # what it does NOT fix, and this one matters
+python bench/relevance/plausible.py # an attempted fix that failed, and why it had to
 python bench/timing/measure.py     # a weaker residual channel
 python bench/latency/measure.py    # what it costs
 pytest -q                          # 16 adversarial tests

@@ -34,7 +34,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .corpus import Document, Principal
-from .naive import Index
+from .naive import Index, tokenise
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,9 +64,19 @@ class Answer:
 class EnforcedRetriever:
     """Count-stable, permission-aware retrieval."""
 
-    def __init__(self, index: Index | None = None, *, pad: bool = True) -> None:
+    def __init__(
+        self,
+        index: Index | None = None,
+        *,
+        pad: bool = True,
+        plausible_pad: bool = False,
+    ) -> None:
         self.index = index or Index()
         self.pad = pad
+        #: Choose filler that shares terms with the query rather than the lowest document id.
+        #: An attempt at closing the relevance channel — measured in `bench/relevance/`, and the
+        #: measurement is the point rather than the assumption that it works.
+        self.plausible_pad = plausible_pad
         # Precomputed per-principal readable sets would be the production choice. Computed
         # per call here because the corpus is 35 documents and a stale cache is a security
         # bug rather than a performance one — a principal whose access was revoked must not
@@ -99,11 +109,34 @@ class EnforcedRetriever:
         #    real failures.
         if len(results) < k:
             chosen = {r.document.id for r in results}
-            filler = sorted(
-                (d for d in readable if d.id not in chosen),
-                key=lambda d: d.id,
-            )
-            for doc in filler[: k - len(results)]:
+            candidates = [d for d in readable if d.id not in chosen]
+
+            if self.plausible_pad:
+                #    RELEVANCE-PLAUSIBLE FILLER. The default pad is ordered by document id,
+                #    which is deterministic but topically arbitrary — so a caller who reads
+                #    five results and sees none of them mention the query's subject knows they
+                #    are all filler, and can count backwards to how many real matches they were
+                #    denied. That is the relevance channel measured in `bench/relevance/`.
+                #
+                #    This orders filler by how many query terms it shares, so the filler at
+                #    least looks like it is about the right subject. Document id remains the
+                #    tie-breaker, because two documents with equal overlap must still be ordered
+                #    deterministically — a pad that varies between identical requests is itself
+                #    a signal.
+                #
+                #    Whether this actually defeats a reader is an open question, and the
+                #    honest answer is measured rather than assumed.
+                query_terms = set(tokenise(query))
+                candidates.sort(
+                    key=lambda d: (
+                        -len(query_terms & set(tokenise(f"{d.title} {d.text}"))),
+                        d.id,
+                    )
+                )
+            else:
+                candidates.sort(key=lambda d: d.id)
+
+            for doc in candidates[: k - len(results)]:
                 results.append(Result(document=doc, score=0.0, padded=True))
 
         return Answer(tuple(results))

@@ -255,3 +255,84 @@ class TestRelevanceChannelIsAcknowledged:
             if retriever.max_stable_k(p) >= 5
         }
         assert len(set(counts.values())) == 1, counts
+
+
+class TestPlausiblePaddingDoesNotClaimMoreThanItDoes:
+    """`plausible_pad` was an attempt to close the relevance channel. It failed.
+
+    These tests pin the negative result. If a future change makes plausible padding actually
+    work, they fail — which is the signal to re-run `bench/relevance/plausible.py` and revise
+    the claim upward. A negative result with no test decays into folklore.
+    """
+
+    def test_plausible_padding_does_not_reduce_detectability(self) -> None:
+        from onewayglass.naive import tokenise
+
+        index = Index()
+        attacker = PRINCIPALS_BY_ID["u_ic_eng"]
+        default = EnforcedRetriever(index, plausible_pad=False)
+        plausible = EnforcedRetriever(index, plausible_pad=True)
+
+        def detectable(query: str, results) -> int:
+            q = set(tokenise(query))
+            return sum(
+                1
+                for r in results
+                if not (q & set(tokenise(f"{r.document.title} {r.document.text}")))
+            )
+
+        queries = (
+            "redundancy planning next fiscal year",
+            "compensation bands for senior engineers",
+            "acquisition discussions with potential acquirers",
+        )
+        d = sum(detectable(q, default.search(attacker, q, k=5).results) for q in queries)
+        p = sum(detectable(q, plausible.search(attacker, q, k=5).results) for q in queries)
+
+        assert d == p == len(queries) * 5, (
+            "plausible padding now changes detectability — re-run bench/relevance/plausible.py "
+            "and update the claim in the README and the results writeup"
+        )
+
+    def test_no_plausible_material_exists_for_restricted_topics(self) -> None:
+        """The structural reason, asserted directly.
+
+        A principal asking about a subject they cannot read has no on-topic document available as
+        filler, so no ordering heuristic can produce plausible padding.
+        """
+        from onewayglass.corpus import DOCUMENTS
+        from onewayglass.naive import tokenise
+
+        attacker = PRINCIPALS_BY_ID["u_ic_eng"]
+        readable = [d for d in DOCUMENTS if d.readable_by(attacker)]
+
+        for query in (
+            "redundancy planning next fiscal year",
+            "compensation bands for senior engineers",
+        ):
+            q = set(tokenise(query))
+            best = max((len(q & set(tokenise(f"{d.title} {d.text}"))) for d in readable), default=0)
+            assert best == 0, f"{query!r} now has filler material with {best} shared terms"
+
+    def test_plausible_padding_still_produces_a_stable_count(self) -> None:
+        """Whatever else it fails at, it must not break the property that does hold."""
+        retriever = EnforcedRetriever(Index(), plausible_pad=True)
+        query = "redundancy planning next fiscal year"
+        counts = {
+            p.id: retriever.search(p, query, k=5).result_count
+            for p in PRINCIPALS
+            if retriever.max_stable_k(p) >= 5
+        }
+        assert len(set(counts.values())) == 1, counts
+
+    def test_plausible_padding_is_still_deterministic(self) -> None:
+        """A pad that varies between identical requests is itself a signal."""
+        retriever = EnforcedRetriever(Index(), plausible_pad=True)
+        attacker = PRINCIPALS_BY_ID["u_ic_eng"]
+        first = [
+            r.document.id for r in retriever.search(attacker, "compensation bands", k=5).results
+        ]
+        second = [
+            r.document.id for r in retriever.search(attacker, "compensation bands", k=5).results
+        ]
+        assert first == second

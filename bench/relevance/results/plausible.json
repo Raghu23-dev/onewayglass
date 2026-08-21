@@ -1,0 +1,149 @@
+{
+  "k": 5,
+  "attacker": "u_ic_eng",
+  "probes": 15,
+  "default_detectable_total": 69,
+  "plausible_detectable_total": 69,
+  "improvement": 0,
+  "queries_with_no_plausible_material": 11,
+  "verdict": "NO IMPROVEMENT \u2014 structural, not a tuning failure",
+  "rows": [
+    {
+      "query": "compensation bands for senior engineers",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "redundancy planning next fiscal year",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "grievance case notes raised this year",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "acquisition discussions with potential acquirers",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "runway analysis burn months",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "board minutes funding round",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "executive succession candidates",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "security audit findings severity",
+      "default_detectable": 3,
+      "plausible_detectable": 3,
+      "best_available_overlap": 1
+    },
+    {
+      "query": "infrastructure cost breakdown compute",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "commission structure accelerators quota",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "lost deal analysis compliance certification",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "performance calibration ratings moderated",
+      "default_detectable": 5,
+      "plausible_detectable": 5,
+      "best_available_overlap": 0
+    },
+    {
+      "query": "holiday allowance annual leave",
+      "default_detectable": 4,
+      "plausible_detectable": 4,
+      "best_available_overlap": 4
+    },
+    {
+      "query": "deployment runbook roll back",
+      "default_detectable": 4,
+      "plausible_detectable": 4,
+      "best_available_overlap": 4
+    },
+    {
+      "query": "expense policy receipts approval",
+      "default_detectable": 3,
+      "plausible_detectable": 3,
+      "best_available_overlap": 3
+    }
+  ],
+  "per_principal": [
+    {
+      "principal": "u_ic_eng",
+      "readable": 13,
+      "queries_with_material": 4
+    },
+    {
+      "principal": "u_lead_eng",
+      "readable": 17,
+      "queries_with_material": 6
+    },
+    {
+      "principal": "u_dir_eng",
+      "readable": 20,
+      "queries_with_material": 8
+    },
+    {
+      "principal": "u_ic_sales",
+      "readable": 11,
+      "queries_with_material": 5
+    },
+    {
+      "principal": "u_dir_sales",
+      "readable": 15,
+      "queries_with_material": 8
+    },
+    {
+      "principal": "u_ic_people",
+      "readable": 10,
+      "queries_with_material": 3
+    },
+    {
+      "principal": "u_dir_people",
+      "readable": 14,
+      "queries_with_material": 7
+    },
+    {
+      "principal": "u_exec",
+      "readable": 35,
+      "queries_with_material": 15
+    },
+    {
+      "principal": "u_contractor",
+      "readable": 10,
+      "queries_with_material": 3
+    }
+  ]
+}
