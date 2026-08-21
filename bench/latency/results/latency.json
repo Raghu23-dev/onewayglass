@@ -1,0 +1,82 @@
+{
+  "k": 5,
+  "pairs_per_principal_per_query": 60,
+  "repeats": 7,
+  "principals": 9,
+  "corpus_size": 35,
+  "queries": [
+    "deployment runbook roll back previous image",
+    "compensation bands senior engineering bonus",
+    "acquisition discussions potential acquirers",
+    "holiday allowance annual leave carry over",
+    "security audit findings session handling",
+    "commission accelerators quota rate",
+    "redundancy planning reduction roles",
+    "service architecture api gateway redis postgres"
+  ],
+  "unit": "microseconds",
+  "paired_sampling": true,
+  "arms": {
+    "naive (as written)": {
+      "p50": 8.833994797896594,
+      "p95": 11.625001206994057,
+      "p99": 30.444710428128136,
+      "mean": 8.980840150090646,
+      "p99_min": 12.867022669524902,
+      "p99_max": 58.90178901609072,
+      "p99_stdev": 16.34069458349104
+    },
+    "naive (dict lookup)": {
+      "p50": 7.917005859781057,
+      "p95": 11.333002476021647,
+      "p99": 35.654996390803916,
+      "mean": 8.090459964983488,
+      "p99_min": 9.86720653600061,
+      "p99_max": 44.77851995034155,
+      "p99_stdev": 12.526809140973008
+    },
+    "enforced": {
+      "p50": 11.66600122814998,
+      "p95": 19.49999568751082,
+      "p99": 47.90041486558042,
+      "mean": 12.713839537860217,
+      "p99_min": 14.950020195101404,
+      "p99_max": 58.32347720570425,
+      "p99_stdev": 15.914001714756177
+    }
+  },
+  "denominator": "naive (dict lookup)",
+  "aa_control_p99_ratios": [
+    1.0671,
+    1.1145,
+    1.1204,
+    1.0334,
+    1.1199,
+    1.1415,
+    1.0345
+  ],
+  "aa_control_median": 1.1145,
+  "aa_control_worst": 1.1415,
+  "p99_ratios": [
+    1.6052,
+    1.2777,
+    1.2899,
+    1.3434,
+    1.929,
+    1.4075,
+    1.5151
+  ],
+  "p50_ratios": [
+    1.4834,
+    1.4813,
+    1.4668,
+    1.4687,
+    1.4714,
+    1.4735,
+    1.4637
+  ],
+  "median_p99_ratio": 1.4075,
+  "worst_p99_ratio": 1.929,
+  "threshold": 2.0,
+  "criterion_6_met": true
+}
