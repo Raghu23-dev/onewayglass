@@ -1,0 +1,16 @@
+{
+  "k": 5,
+  "attacker": "u_ic_eng",
+  "count_inference": {
+    "naive": 13,
+    "enforced": 0,
+    "probes": 15
+  },
+  "existence_probing": {
+    "naive": 17,
+    "enforced": 0
+  },
+  "count_stable": true,
+  "unstable_queries": [],
+  "content_violations": 0
+}
