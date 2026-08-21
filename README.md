@@ -114,6 +114,7 @@ python bench/baseline/leak.py      # the leak
 python bench/enforce/replay.py     # the fix
 python bench/quality/measure.py    # what it costs
 python bench/timing/measure.py     # what it does not fix
+python bench/latency/measure.py    # what it costs
 pytest -q                          # 16 adversarial tests
 ```
 
@@ -126,7 +127,30 @@ pytest -q                          # 16 adversarial tests
 | 3 | Count-stability | **met** — identical count, all principals, all queries |
 | 4 | Existence probing defeated | **met** — 17 → 0 |
 | 5 | Retrieval quality preserved | **met** — 0.923 → 1.000 |
-| 6 | Latency within 2× naive | **pending** |
+| 6 | Latency within 2× naive | **met** — p50 1.48×, p95 1.50×, batched p99 1.37×, all 7/7 repeats |
+
+Per-request p99 is reported as **unresolved**: two runs of identical code gave worst-case ratios
+of 1.79× and 2.79×, and an A/A control shows identical code differing by up to 1.15× at p99. The
+run-to-run swing exceeds the effect, so picking the passing run would be picking a result.
+
+## What it costs
+
+| | Naive | Enforced | |
+|---|---|---|---|
+| p50 | 7.29 µs | 10.83 µs | **1.48×** |
+| p95 | 8.63 µs | 12.92 µs | **1.50×** |
+| batched p99 | 11.78 µs | 16.25 µs | **1.37×** |
+
+3.5 µs per search, and 7× the permission checks for 1.5× the latency — BM25 scoring dominates
+both arms. The cost scales with **corpus size, not k**: 35 checks per query instead of 5. At a
+million documents that is a full scan and this implementation would need a permission-partitioned
+index.
+
+The denominator is a naive path with the same dict lookup rather than the one as written, so the
+ratio does not credit enforcement for the baseline's O(k·n) id scan.
+[`bench/latency/results/2026-08-21.md`](bench/latency/results/2026-08-21.md) has the per-repeat
+series, the A/A control and the three measurement bugs that had to be fixed before the number
+meant anything.
 
 ## Limitations
 
