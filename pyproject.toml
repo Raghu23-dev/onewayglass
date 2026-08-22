@@ -1,6 +1,6 @@
 [project]
 name = "onewayglass"
-version = "0.0.0"
+version = "0.3.0"
 description = "RAG over company documents leaks: filtering after retrieval changes result counts, so absence is inferable."
 readme = "README.md"
 requires-python = ">=3.12"
