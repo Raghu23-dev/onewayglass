@@ -10,7 +10,22 @@ authors = [{ name = "Raghuram P" }]
 # It was initially listed only in requirements.txt, which Vercel's Python builder ignores in
 # favour of pyproject.toml — so the deploy resolved 21 packages without the web framework it
 # needed. Declared here, where the platform actually looks.
-dependencies = ["fastapi>=0.121,<0.122"]
+dependencies = [
+  "fastapi>=0.121,<0.142",
+  # starlette is TRANSITIVE, via fastapi, and pinned here on purpose.
+  #
+  # fastapi asks only for `starlette>=0.46.0`, so the resolver settled on 0.50.0 — which carries
+  # seven advisories (PYSEC-2026-161, -248, -249, -2280, -2281), the newest fixed in 1.3.1. Every
+  # direct dependency was current while the tree was vulnerable, which is the case a floor has to
+  # be stated for, because nothing infers it.
+  #
+  # Found by auditing this repo after the daily workflow raised the same finding on mcpgantlet.
+  # This repo's own scheduled run had not reached it yet — a scan is only as timely as its cron.
+  #
+  # A floor, not an equality pin: a pin goes stale into the next advisory and produces a weekly
+  # red Dependabot PR nobody merges.
+  "starlette>=1.3.1",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.8", "mypy>=1.13", "httpx>=0.27"]
