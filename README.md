@@ -10,6 +10,12 @@ matched. Absence is informative.
      of it. Act 2 — the same query, enforced, indistinguishable from a query with no hidden
      matches. Act 3 — the attack suite and the timing channel that survives. -->
 
+**Install:**
+
+```bash
+pip install onewayglass
+```
+
 **Live:** https://onewayglass.vercel.app — run the attack yourself, as two different people:
 
 ```bash
